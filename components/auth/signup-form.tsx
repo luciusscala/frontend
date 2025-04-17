@@ -26,7 +26,10 @@ export function SignupForm() {
     const password = formData.get("password") as string;
 
     try {
+      console.log("Starting signup process...");
+      
       // First, check eligibility with your verification API
+      console.log("Checking eligibility...");
       const eligibilityResponse = await fetch("/api/verify-eligibility", {
         method: "POST",
         headers: {
@@ -35,7 +38,9 @@ export function SignupForm() {
         body: JSON.stringify({ fullName, email }),
       });
 
+      console.log("Eligibility response status:", eligibilityResponse.status);
       const eligibilityData = await eligibilityResponse.json();
+      console.log("Eligibility data:", eligibilityData);
 
       if (!eligibilityData.valid) {
         setError("You're not on the roster. Please contact your team administrator.");
@@ -43,6 +48,7 @@ export function SignupForm() {
       }
 
       // If eligible, proceed with Supabase signup
+      console.log("Proceeding with Supabase signup...");
       const { data, error: signupError } = await supabase.auth.signUp({
         email,
         password,
@@ -53,14 +59,18 @@ export function SignupForm() {
         },
       });
 
+      console.log("Supabase signup response:", { data, error: signupError });
+
       if (signupError) {
         setError(signupError.message);
         return;
       }
 
       // Redirect to email verification page
+      console.log("Signup successful, redirecting to verification page...");
       router.push("/verify-email");
     } catch (err) {
+      console.error("Signup error:", err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);

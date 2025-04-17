@@ -7,17 +7,16 @@ export async function POST(request: Request) {
   try {
     const { fullName, email } = await request.json();
 
-    // Call your FastAPI service
-    const response = await fetch(`${FASTAPI_SERVICE_URL}/verify`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        full_name: fullName,
-        email: email,
-      }),
-    });
+    // Call your FastAPI service with query parameters
+    const response = await fetch(
+      `${FASTAPI_SERVICE_URL}/verify?email=${encodeURIComponent(email)}&name=${encodeURIComponent(fullName)}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`FastAPI service returned ${response.status}`);
